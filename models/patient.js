@@ -20,6 +20,10 @@ const patientSchema = new mongoose.Schema({
     address: {
         type: String,
         required: true
+    },
+    appointment: {
+        type: String,
+        required: false,
     }
 });
 
