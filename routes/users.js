@@ -19,7 +19,7 @@ router.post('/register', async (req, res) => {
             return res.status(409).json({ message: "Username already exists" });
         }
 
-        if (!existingEmail) {
+        if (existingEmail) {
             return res.status(409).json({ message: "Email already exists" });
         }
 

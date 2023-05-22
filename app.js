@@ -6,7 +6,6 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 const app = express();
-SECRET_KEY = 'haspnepbsjd89absd1287'
 app.use(express.json());
 
 mongoose.connect('mongodb://localhost/hospital', {
