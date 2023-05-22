@@ -1,6 +1,7 @@
 const express = require('express')
 const mongoose = require("mongoose");
 const patientsRouter = require("./routes/patients");
+const userRouter = require('./routes/users');
 
 const app = express();
 
@@ -14,11 +15,19 @@ mongoose.connect('mongodb://localhost/hospital', {
     console.log("Failed to connect to MongoDB", error);
 });
 
-// Routes
+// Middleware for parsing and URL encoding
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+
+// Routes for patients
 app.use('/api/patients', patientsRouter);
 
+// Routes for users
+app.use('/api/users', userRouter);
+
 // Start server
-const port = 3000;
+const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
