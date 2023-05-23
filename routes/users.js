@@ -5,6 +5,7 @@ const User = require('../models/user');
 const path = require('path');
 const multer = require('multer');
 const dotenv = require('dotenv');
+const fs = require('fs');
 dotenv.config();
 
 
@@ -109,4 +110,86 @@ router.post('/login', async (req, res) => {
     }
 });
 
+
+// Endpoint for updating the user info
+router.put('/update/:id', upload.single('profilePicture'), async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { username, email, password } = req.body;
+
+        // Find the user by ID
+        const user = await User.findById(id);
+
+        // If the user doesnot exist return an error
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Update the user properties
+        user.username = username;
+        user.email = email;
+        user.password = password;
+
+        if (req.fileValidationError) {
+            // Handle the file validation error
+            return res.status(400).json({ message: req.fileValidationError });
+        }
+
+        // Update the profile picture if it exists
+        if (req.file) {
+            const uniqueFileName = req.uniqueFileName;
+            await user.updateProfilePicture(req.file.path);
+        }
+
+
+        await user.save();
+
+        res.status(200).json({ message: "User Updated Successfully" })
+    } catch (error) {
+        res.status(500).json({ message: "Failed to update user", error: error.message });
+    }
+});
+
+// Deleting a user
+router.delete('/delete/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Find the user by ID
+        const user = await User.findById(id);
+
+        // If user doesnot exist throw and error
+        if (!user) {
+            return res.status(200).json({ message: "User Not Found" })
+        }
+
+        // Deleting the users profile picture if it exists
+        if (user.profilePicture && user.profilePicture !== 'uploads/default.jpg') {
+            const profilePicturePath = path.join(__dirname, '..', 'uploads', user.profilePicture)
+            if (fs.existsSync(profilePicturePath)) {
+                fs.unlinkSync(profilePicturePath);
+            }
+        }
+
+        // Delete the user
+        await user.deleteOne();
+
+        res.status(200).json({ message: "User Deleted Successfully" });
+    } catch (error) {
+        res.status(500).json({ message: "Failed to delete user", error: error.message })
+    }
+})
+
+
+// Get all users
+router.get('/', async (req, res) => {
+    try {
+        // Find all users
+        const users = await User.find();
+
+        res.status(200).json({ users })
+    } catch (error) {
+        res.status(500).json({ message: "Failed to get users", error: error.name })
+    }
+})
 module.exports = router;

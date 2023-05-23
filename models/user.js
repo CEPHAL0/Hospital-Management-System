@@ -75,7 +75,6 @@ userSchema.methods.updateProfilePicture = async function (filePath) {
             fs.unlinkSync(previousPicturePath);
         }
 
-
         // Generate a unique filename for profile picture
         const fileExtension = path.extname(filePath);
         const uniqueFileName = `${this._id}${fileExtension}`;
