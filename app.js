@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const patientsRouter = require("./routes/patients");
 const userRouter = require('./routes/users');
 const dotenv = require('dotenv');
+const path = require('path');
 
 dotenv.config();
 const app = express();
@@ -25,6 +26,7 @@ app.use('/api/patients', patientsRouter);
 
 // Routes for users
 app.use('/api/users', userRouter);
+
 
 // Start server
 const port = process.env.port || 3000;

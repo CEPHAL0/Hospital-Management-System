@@ -2,11 +2,33 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const path = require('path');
+const multer = require('multer');
 const dotenv = require('dotenv');
 dotenv.config();
 
+
+// Multer for file uploads
+const storage = multer.diskStorage({
+    destination: (req, res, cb) => {
+        cb(null, 'uploads');
+    },
+    filename: (req, file, cb) => {
+        const fileExtension = path.extname(file.originalname);
+        let uniqueFileName = '';
+        if (fileExtension == '.jpg' || fileExtension == '.jpeg' || fileExtension == '.gif' || fileExtension == '.png') {
+            uniqueFileName = `${Date.now()}${fileExtension}`;
+            req.uniqueFileName = uniqueFileName;
+        }
+        cb(null, uniqueFileName);
+    }
+});
+
+const upload = multer({ storage });
+
+
 // Register a new user
-router.post('/register', async (req, res) => {
+router.post('/register', upload.single('profilePicture'), async (req, res) => {
     try {
         const { username, email, password } = req.body;
 
@@ -24,10 +46,16 @@ router.post('/register', async (req, res) => {
         }
 
         const user = new User({ username, email, password });
+
+        // Update the profile picture if it exists
+        if (req.file) {
+            const uniqueFileName = req.uniqueFileName;
+            await user.updateProfilePicture(req.file.path);
+        }
         await user.save();
         res.status(201).json({ message: "User registered successfully" });
     } catch (error) {
-        res.status(500).json({ message: "Failed to register user", error })
+        res.status(500).json({ message: "Failed to register user", error: error.message })
     }
 });
 

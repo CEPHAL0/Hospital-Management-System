@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const path = require('path');
+const fs = require('fs');
 
 const userSchema = new mongoose.Schema({
     username: {
@@ -31,6 +33,11 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         minLength: 8,
+    },
+
+    profilePicture: {
+        type: String,
+        default: "uploads/default.jpg"
     }
 });
 
@@ -58,6 +65,35 @@ userSchema.methods.comparePassword = async function (password) {
         throw new Error(error);
     }
 };
+
+// Helper method to update profile picture
+userSchema.methods.updateProfilePicture = async function (filePath) {
+    try {
+        // Delete previous picture if exists
+        const previousPicturePath = path.join(__dirname, '..', 'uploads', this.profilePicture);
+        if (fs.existsSync(previousPicturePath)) {
+            fs.unlinkSync(previousPicturePath);
+        }
+
+
+        // Generate a unique filename for profile picture
+        const fileExtension = path.extname(filePath);
+        const uniqueFileName = `${this._id}${fileExtension}`;
+        const newPicturePath = path.join(__dirname, "..", "uploads", uniqueFileName);
+
+        // Move the uploaded picture to the new location
+        fs.renameSync(filePath, newPicturePath);
+
+        // Update the profilePicture field in the user document
+        this.profilePicture = uniqueFileName;
+        await this.save();
+
+        return uniqueFileName;
+
+    } catch (error) {
+        throw new Error(error);
+    }
+}
 
 const User = mongoose.model('User', userSchema);
 module.exports = User;
