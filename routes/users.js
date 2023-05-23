@@ -6,6 +6,7 @@ const path = require('path');
 const multer = require('multer');
 const dotenv = require('dotenv');
 const fs = require('fs');
+const bcrypt = require('bcrypt');
 dotenv.config();
 
 
@@ -65,7 +66,10 @@ router.post('/register', upload.single('profilePicture'), async (req, res) => {
             return res.status(409).json({ message: "Email already exists" });
         }
 
-        const user = new User({ username, email, password });
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        const user = new User({ username, email, password: hashedPassword });
 
         if (req.fileValidationError) {
             // Handle the file validation error
@@ -95,11 +99,12 @@ router.post('/login', async (req, res) => {
 
         // Checking is the username exists
         if (!user) {
-            return res.status(401).json({ message: "Authentication Failed x1" });
+            return res.status(401).json({ message: "User doesnt exist" });
         }
 
         // Checking password
         const isPassWordValid = await user.comparePassword(password);
+
         if (!isPassWordValid) {
             return res.status(401).json({ message: "Incorrect Password" });
         }

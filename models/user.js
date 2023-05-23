@@ -45,10 +45,7 @@ const userSchema = new mongoose.Schema({
 // Hash the password before saving into the database
 userSchema.pre('save', async function (next) {
     try {
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(this.password, salt);
-        this.password = hashedPassword;
-
+        
         // Inbuilt middleware to perform subsequent operation after password generation
         next();
     }
@@ -60,6 +57,7 @@ userSchema.pre('save', async function (next) {
 // Helper method to compare passwords
 userSchema.methods.comparePassword = async function (password) {
     try {
+        console.log(this.password)
         return await bcrypt.compare(password, this.password);
     } catch (error) {
         throw new Error(error);
