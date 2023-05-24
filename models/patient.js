@@ -21,10 +21,12 @@ const patientSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    appointment: {
-        type: String,
-        required: false,
+    numberOfAppointments: {
+        type: Number,
+        required: true,
+        default: 0,
     }
+
 });
 
 const Patient = mongoose.model('Patient', patientSchema);
