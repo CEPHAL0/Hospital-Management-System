@@ -81,7 +81,7 @@ router.post('/register', upload.single('profilePicture'), async (req, res) => {
             await user.updateProfilePicture(req.file.path);
         }
         await user.save();
-        res.status(201).json({ message: "User registered successfully" });
+        res.status(201).json({ message: "User registered successfully", user });
     } catch (error) {
         res.status(500).json({ message: "Failed to register user", error: error.message });
         next(error);
@@ -149,7 +149,7 @@ router.put('/update/:id', upload.single('profilePicture'), async (req, res) => {
 
         await user.save();
 
-        res.status(200).json({ message: "User Updated Successfully" })
+        res.status(200).json({ message: "User Updated Successfully", updatedUser: user })
     } catch (error) {
         res.status(500).json({ message: "Failed to update user", error: error.message });
     }
