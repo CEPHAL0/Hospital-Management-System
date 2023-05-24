@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const dotenv = require("dotenv")
 dotenv.config();
+
 // Middleware to authenticate the JWT Token and authorize appointments
 const auth = async (req, res, next) => {
     try {
