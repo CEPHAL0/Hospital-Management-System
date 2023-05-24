@@ -1,6 +1,6 @@
 # Hospital-Management-System
 This is a **RESTFul API** based Hospital Management System with the functionalities of CRUD operation on the following models: </br>
-
+Note: You must have mongodb installed in your local machine for the project to run
 1. Doctors
 2. Patients
 3. Users
