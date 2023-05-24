@@ -2,10 +2,16 @@ const express = require("express");
 const router = express.Router();
 const Patient = require("../models/patient");
 
-router.post('/', async (req, res) => {
+router.post('/register', async (req, res) => {
     try {
-        const { name, age, gender, contactNumber, address } = req.body;
-        const patient = await Patient.create({ name, age, gender, contactNumber, address });
+        const { name, age, gender, contactNumber, address, numberOfAppointments } = req.body;
+
+        if (!numberOfAppointments) {
+            numberOfAppointments = 0;
+        }
+
+        const patient = await Patient.create({ name, age, gender, contactNumber, address, numberOfAppointments });
+
         res.status(201).json({ message: 'Patient created successfully', patient });
     }
     catch (error) {
@@ -14,7 +20,7 @@ router.post('/', async (req, res) => {
             res.status(400).json({ message: "Validation error", errors })
         }
         else {
-            res.status(500).json({ message: 'Failed to create patient', error });
+            res.status(500).json({ message: 'Failed to create patient', error: error.message });
         }
     }
 });
