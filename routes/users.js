@@ -158,7 +158,10 @@ router.put('/update/:id', upload.single('profilePicture'), async (req, res) => {
 // Deleting a user
 router.delete('/delete/:id', async (req, res) => {
     try {
-        const { id } = req.params;
+        const id = req.params.id;
+
+        // Or you can use destructuring method
+        // const {id} = req.params;
 
         // Find the user by ID
         const user = await User.findById(id);
@@ -195,6 +198,28 @@ router.get('/', async (req, res) => {
         res.status(200).json({ users })
     } catch (error) {
         res.status(500).json({ message: "Failed to get users", error: error.name })
+    }
+})
+
+// Get patient details by ID
+router.get('/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+
+        // Or you can use destructuring method
+        // const {id} = req.params;
+
+
+        const user = await User.findById(id);
+
+        // Check if user doesnot exist
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.status(500).json({ user })
+    } catch (error) {
+        res.status(500).json({ message: "Failed to get user details", error: error.message })
     }
 })
 module.exports = router;
