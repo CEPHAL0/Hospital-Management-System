@@ -5,6 +5,8 @@ const userRouter = require('./routes/users');
 const doctorsRouter = require('./routes/doctors')
 const dotenv = require('dotenv');
 const path = require('path');
+const authMiddleware = require("./middleware/auth");
+const appointmentRoutes = require("./routes/appointments");
 
 dotenv.config();
 const app = express();
@@ -30,6 +32,9 @@ app.use('/api/doctors', doctorsRouter)
 
 // Routes for users
 app.use('/api/users', userRouter);
+
+// Routes for appointment
+app.use("/api/appointments", authMiddleware, appointmentRoutes);
 
 // Start server
 const port = process.env.port || 3000;

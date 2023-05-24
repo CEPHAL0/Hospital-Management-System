@@ -92,7 +92,7 @@ router.post('/register', upload.single('profilePicture'), async (req, res) => {
 router.use(errorHandler);
 
 // Authenticate user and generate JWT
-router.post('/login', async (req, res) => {
+router.post('/login', upload.none(), async (req, res) => {
     try {
         const { username, password } = req.body;
         const user = await User.findOne({ username });

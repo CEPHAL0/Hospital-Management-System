@@ -22,11 +22,9 @@ const doctorSchema = new mongoose.Schema({
     },
     department: {
         type: String,
+        enum: ['Orthopedics', 'Pediatrics', 'Dental', 'Surgery', 'Nutrition', 'Dermatology'],
         required: true,
     }
-
-
-
 });
 
 
