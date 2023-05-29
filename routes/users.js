@@ -133,8 +133,10 @@ router.put('/update/:id', upload.single('profilePicture'), async (req, res) => {
         // Update the user properties
         user.username = username;
         user.email = email;
-        user.password = password;
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
 
+        user.password = hashedPassword;
         if (req.fileValidationError) {
             // Handle the file validation error
             return res.status(400).json({ message: req.fileValidationError });
